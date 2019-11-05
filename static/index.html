@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+</head>
+
+<body>
+    Hello, this is a web page from the 70s. Groovy.
+    <div id="result"></div>
+
+    <script src="http://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"
+        integrity="sha256-S1J4GVHHDMiirir9qsXWc8ZWw74PHHafpsHp5PXtjTs=" crossorigin="anonymous"></script>
+    <script>
+        //Long way
+        function longWay() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    update(this);
+                }
+            };
+            xhttp.open("GET", "/getSong", true);
+            xhttp.send();
+        }
+        function shortWithJQuery() {
+            $.ajax("/getSong", {
+                success: function (data) {
+                    update({ response: data })
+                    $.ajax("/getSong", {
+                        success: function (data) {
+                            update({ response: data })
+                            $.ajax("/getSong", {
+                                success: function (data) {
+                                    update({ response: data })
+
+                                },
+                                failure: function (err) {
+
+                                }
+                            }
+                            )
+                        },
+                        failure: function (err) {
+
+                        }
+                    }
+                    )
+                },
+                failure: function (err) {
+
+                }
+            }
+            )
+        }
+
+        function shortWithPromises() {
+            axios.get("/getSong")
+                .then(result => {
+                    return update({ response: result.data });
+                    axios.get("/getSong");
+                })
+                .then(result => {
+                    return update({ response: result.data });
+
+                })
+                .then(result => {
+                    return update({ response: result.data });
+
+                })
+                .catch(err => {
+
+                });
+        }
+        //longWay();
+        //shortWithJQuery();
+        shortWithPromises();
+
+        function update(data) {
+            document.getElementById("result").innerHTML = data.response;
+        }
+
+    </script>
+
+</body>
+
+</html>
